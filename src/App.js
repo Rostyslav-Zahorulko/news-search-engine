@@ -18,39 +18,39 @@ class App extends Component {
     };
   }
 
-  getArticles = ({ query, page }) => {
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState.searchQuery !== this.state.searchQuery) {
+      this.fetchArticles();
+    }
+  }
+
+  resetAppState = query => {
     this.setState({
       articles: [],
       searchQuery: query,
-      isLoading: true,
+      currentPage: 1,
       error: '',
     });
-
-    newsApi
-      .fetchArticles(query, page)
-      .then(articles =>
-        this.setState({
-          articles,
-          currentPage: page + 1,
-        }),
-      )
-      .catch(({ response }) => this.setState({ error: response.data.message }))
-      .finally(() => this.setState({ isLoading: false }));
   };
 
-  getMoreArticles = () => {
+  fetchArticles = () => {
     const { searchQuery, currentPage } = this.state;
 
-    this.setState({ isLoading: true, error: '' });
+    const options = {
+      searchQuery,
+      currentPage,
+    };
+
+    this.setState({ isLoading: true });
 
     newsApi
-      .fetchArticles(searchQuery, currentPage)
-      .then(articles =>
+      .fetchArticles(options)
+      .then(articles => {
         this.setState(prevState => ({
           articles: [...prevState.articles, ...articles],
           currentPage: prevState.currentPage + 1,
-        })),
-      )
+        }));
+      })
       .catch(({ response }) => this.setState({ error: response.data.message }))
       .finally(() => this.setState({ isLoading: false }));
   };
@@ -62,10 +62,10 @@ class App extends Component {
     return (
       <Container>
         <h1>Breaking News</h1>
-        <SearchForm onSubmit={this.getArticles} />
+        <SearchForm onSubmit={this.resetAppState} />
         <ArticlesList articles={articles} />
         {shouldRenderShowMoreButton && (
-          <ShowMoreButton onClick={this.getMoreArticles} />
+          <ShowMoreButton onClick={this.fetchArticles} />
         )}
         {isLoading && <p>Loading...</p>}
       </Container>

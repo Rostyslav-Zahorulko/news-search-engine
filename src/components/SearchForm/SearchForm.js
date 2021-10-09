@@ -5,23 +5,18 @@ class SearchForm extends Component {
     text: '',
   };
 
-  handleChange = e => {
+  handleInputChange = e => {
     this.setState({ text: e.currentTarget.value });
   };
 
-  handleSubmit = e => {
+  handleFormSubmit = e => {
     const { text } = this.state;
     const { onSubmit } = this.props;
 
     e.preventDefault();
 
     if (text) {
-      const options = {
-        query: text,
-        page: 1,
-      };
-
-      onSubmit(options);
+      onSubmit(text);
       this.setState({ text: '' });
     }
   };
@@ -30,10 +25,10 @@ class SearchForm extends Component {
     const { text } = this.state;
 
     return (
-      <form autoComplete="off" onSubmit={this.handleSubmit}>
+      <form autoComplete="off" onSubmit={this.handleFormSubmit}>
         <label>
           Find what you want
-          <input type="text" value={text} onChange={this.handleChange} />
+          <input type="text" value={text} onChange={this.handleInputChange} />
         </label>
         <button type="submit">Search</button>
       </form>
