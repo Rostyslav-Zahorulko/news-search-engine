@@ -1,1 +1,1 @@
-React application template
+News Search Engine
